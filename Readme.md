@@ -141,7 +141,7 @@ list.appendTo('body');
 
   Append this view's element to `val`.
 
-### View#prependto(val)
+### View#prependTo(val)
 
   Prepend this view's element to `val`.
 
@@ -403,9 +403,7 @@ todo.list
   .add('Buy groceries');
   .add('Try out Caustic');
   .add('Help out with Caustic');
-``
-
-
+```
 
 ## License 
 
