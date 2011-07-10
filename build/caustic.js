@@ -152,7 +152,7 @@ View.prototype.__proto__ = EventEmitter.prototype;
 View.prototype.visit = function(el, ignore){
   var self = this
     , type = el.get(0).nodeName
-    , classes = el.attr('class').split(/ +/)
+    , classes = (el.attr('class') || '').split(/ +/)
     , method = 'visit' + type
     , name = camelcase(classes[0]);
 
@@ -194,6 +194,7 @@ View.prototype.visitINPUT = function(el, name){
 
   switch (type) {
     case 'text':
+    case 'password':
       this[name] = function(val){
         if (0 == arguments.length) return el.val();
         el.val(val);
@@ -206,7 +207,7 @@ View.prototype.visitINPUT = function(el, name){
       };
 
       this[name].isEmpty = function(){
-        return '' == el.val();
+        return '' == $.trim(el.val());
       };
 
       this[name].clear = function(){
@@ -279,6 +280,8 @@ View.prototype.visitFORM = function(el, name){
           return false;
         });
         break;
+      default:
+        el.submit();
     }
   }
 };
@@ -377,6 +380,7 @@ View.prototype.visitDIV = function(el, name){
  * @api private
  */
 
+View.prototype.visitOL =
 View.prototype.visitUL = function(el, name){
   var self = this;
   this.children = [];
@@ -497,6 +501,8 @@ View.prototype.addTo = function(list){
 /**
  * Replace the children of `val` with this view's element.
  *
+ * TODO: rename me
+ *
  * @param {String|jQuery|View} val
  * @return {View} for chaining
  * @api public
@@ -528,6 +534,36 @@ View.prototype.hide = function(){
 
 View.prototype.show = function(){
   this.el.show();
+  return this;
+};
+
+/**
+ * Center the element relative to `other`, or the window.
+ *
+ * @param {jQuery} other
+ * @return {View} for chaining
+ * @api public
+ */
+
+View.prototype.center = function(other){
+  var self = this
+    , el = this.el
+    , other = $(other || window)
+    , width = other.width()
+    , height = other.height();
+
+  if (!this._resize) {
+    $(other).resize(function(){
+      self.center();
+    });
+    this._resize = true;
+  }
+
+  el.css({
+      top: (height / 2) - el.height() / 2
+    , left: (width / 2) - el.width() / 2
+  });
+
   return this;
 };
 
