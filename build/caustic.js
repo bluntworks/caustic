@@ -129,7 +129,8 @@ View = function View(name) {
   if (!(this instanceof View)) return new View(name);
   EventEmitter.call(this);
   var html;
-  if (~name.indexOf('<')) html = name;
+  if (name instanceof jQuery) html = name;
+  else if (~name.indexOf('<')) html = name;
   else html = $('#' + name + '-template').html(); 
   this.el = $(html);
   this.visit(this.el);
@@ -230,8 +231,9 @@ View.prototype.visitINPUT = function(el, name){
               : val);
         }
         return this;
-      }
+      };
       break;
+    case 'button':
     case 'submit':
       this.visitA(el, name);
   }
@@ -283,7 +285,7 @@ View.prototype.visitFORM = function(el, name){
       default:
         el.submit();
     }
-  }
+  };
 };
 
 /**
@@ -315,7 +317,7 @@ View.prototype.visitIMG = function(el, name){
 };
 
 /**
- * Visit A tag.
+ * Visit A or BUTTON tag.
  *
  *  - adds `.name([fn])` to listen or trigger the click event
  *  - emits "name" when triggered
@@ -324,7 +326,8 @@ View.prototype.visitIMG = function(el, name){
  * @api private
  */
 
-View.prototype.visitA = function(el, name){
+View.prototype.visitA =
+View.prototype.visitBUTTON = function(el, name){
   var self = this;
 
   el.click(function(e){
@@ -338,7 +341,7 @@ View.prototype.visitA = function(el, name){
       return false;
     });
     return this;
-  }
+  };
 };
 
 /**
