@@ -484,6 +484,7 @@ View.prototype.remove = function(){
     , type = parent.get(0).nodeName;
   if ('LI' == type) parent.remove();
   else this.el.remove();
+  this.emit('remove');
   return this;
 };
 
@@ -525,6 +526,7 @@ View.prototype.replace = function(val){
 
 View.prototype.hide = function(){
   this.el.hide();
+  this.emit('hide');
   return this;
 };
 
@@ -537,6 +539,7 @@ View.prototype.hide = function(){
 
 View.prototype.show = function(){
   this.el.show();
+  this.emit('show');
   return this;
 };
 
@@ -556,9 +559,14 @@ View.prototype.center = function(other){
     , height = other.height();
 
   if (!this._resize) {
-    $(other).resize(function(){
-      self.center();
-    });
+    $(other).resize(function(){ self.center(); });
+
+    function unbind(){
+      self._resize = false;
+      $(other).unbind('resize');
+    }
+
+    this.on('hide', unbind).on('remove', unbind);
     this._resize = true;
   }
 
