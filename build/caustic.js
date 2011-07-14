@@ -128,12 +128,14 @@ function camelcase(str) {
 View = function View(name) {
   if (!(this instanceof View)) return new View(name);
   EventEmitter.call(this);
-  var html;
+  var html, self = this;
   if (name instanceof jQuery) html = name;
   else if (~name.indexOf('<')) html = name;
   else html = $('#' + name + '-template').html(); 
   this.el = $(html);
-  this.visit(this.el);
+  this.el.each(function(i, el){
+    self.visit($(el));
+  });
 };
 
 /**
